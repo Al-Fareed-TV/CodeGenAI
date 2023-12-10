@@ -1,5 +1,5 @@
 import streamlit as st
-from home_page import home_page
+from home_page import Home_Page
 from about_us_page import About_Page
 class App:
     def app():
@@ -18,7 +18,7 @@ class App:
         choice = st.sidebar.selectbox("Go to", pages)
 
         if choice == "Home":
-            home_page()
+            Home_Page().home_page()
         elif choice == "About Us":
             About_Page().about_page()
 
