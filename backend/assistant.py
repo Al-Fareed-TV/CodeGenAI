@@ -154,6 +154,27 @@ code = """
 </html>
 """
 
+# --------------------------------------------------------------
+# Create assistant
+# --------------------------------------------------------------
+def create_assistant():
+    global assistant  # Make the assistant variable global
+    assistant = client.beta.assistants.create(
+        name="Automation code Generator",
+        instructions="You're an Automation expert who knows to write automation script in different languages and tools.\
+            Help me to write Automation code in Java using Selenium tool.Remember to cover all the edge cases. \
+            Assume that user has created webdriver and wants only test cases that covers all the edge cases,  \
+            also look for assertions if possible like assertion on page title placeholder of the input element or label.\
+            Also look for every element in provided whether they are present or not. html code is provided below.\
+             Generate test case on this. Also generate code which is reusable following Page object model and reusability. \
+             Generate only test cases not other than that. if you are generating response with full context it will be rejected and not accepted. \
+            Provide only test cases with no import statement and no beforeClass and afterClass method. \
+            While generating test cases segregate different test cases don't give in one single response. Create '''different responses'''    \
+        ",
+        tools=[{"type": "code_interpreter"}],
+        model="gpt-4-1106-preview",
+    )
+    return assistant
 
 assistant = create_assistant()
 
