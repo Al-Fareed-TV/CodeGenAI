@@ -12,3 +12,15 @@ def main():
     caption_text = "Junior Vagrants"
     with col2:
         st.sidebar.markdown(f'<div style="float: left; margin-right: auto; margin-top: auto; font-size:15px;">{caption_text}</div>', unsafe_allow_html=True)
+
+    st.sidebar.title("Navigation")
+        pages = ["Home", "About Us"]
+        choice = st.sidebar.selectbox("Go to", pages)
+
+        if choice == "Home":
+            home_page()
+        elif choice == "About Us":
+            about_page()
+
+if __name__ == "__main__":
+     main()
