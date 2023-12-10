@@ -184,6 +184,26 @@ assistant = create_assistant()
 # --------------------------------------------------------------
 
 
+# --------------------------------------------------------------
+# Generate response
+# --------------------------------------------------------------
+def generate_response(message_body, name):
+    # If a thread doesn't exist, create one and store it
+    print(f"Creating new thread for {name} with wa_id")
+    thread = client.beta.threads.create()
+    thread_id = thread.id
+
+    # Add message to thread
+    message = client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=message_body,
+    )
+
+    # Run the assistant and get the new message
+    new_message = run_assistant(thread)
+    return new_message
+
 
 # --------------------------------------------------------------
 # Test assistant
