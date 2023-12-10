@@ -8,6 +8,9 @@ def save_html(url, output_file="output.html"):
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
 
+            for script in soup(["script", "style"]):
+                script.extract()
+        
             with open(output_file, 'w', encoding='utf-8') as file:
                 file.write(soup.prettify())
                 
