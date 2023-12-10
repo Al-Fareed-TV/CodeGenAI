@@ -2,11 +2,13 @@ import streamlit as st
 import time
 import sys
 import ast 
-sys.path.append("/Users/testvagrant/Baganna/junior-vagrants/backend/")
+sys.path.append("/Users/testvagrant/Desktop/junior-vagrants/backend/")
 from model.assistant import Assistant
 
 class Home_Page:
-    def home_page():
+    def __init__(self):
+        pass
+    def home_page(self):
         st.title("Auto TestCase Generator")
 
         # Input textbox with styling
