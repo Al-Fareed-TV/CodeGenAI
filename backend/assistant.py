@@ -89,3 +89,37 @@ def generate_response(message_body, wa_id, name):
 # --------------------------------------------------------------
 # Run assistant
 # --------------------------------------------------------------
+def run_assistant(thread):
+    # Retrieve the Assistant
+    assistant = client.beta.assistants.retrieve("asst_7Wx2nQwoPWSf710jrdWTDlfE")
+
+    # Run the assistant
+    run = client.beta.threads.runs.create(
+        thread_id=thread.id,
+        assistant_id=assistant.id,
+    )
+
+    # Wait for completion
+    while run.status != "completed":
+        # Be nice to the API
+        time.sleep(0.5)
+        run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
+
+    # Retrieve the Messages
+    messages = client.beta.threads.messages.list(thread_id=thread.id)
+    new_message = messages.data[0].content[0].text.value
+    print(f"Generated message: {new_message}")
+    return new_message
+
+
+# --------------------------------------------------------------
+# Test assistant
+# --------------------------------------------------------------
+
+new_message = generate_response("What's the check in time?", "123", "John")
+
+new_message = generate_response("What's the pin for the lockbox?", "456", "Sarah")
+
+new_message = generate_response("What was my previous question?", "123", "John")
+
+new_message = generate_response("What was my previous question?", "456", "Sarah") 
