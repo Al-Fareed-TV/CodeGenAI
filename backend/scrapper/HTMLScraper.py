@@ -1,27 +1,24 @@
 import requests
 from bs4 import BeautifulSoup
 
-def save_html(url, output_file="output.html"):
-    try:
-        response = requests.get(url)
+class HTMLScraper:
+    def __init__(self):
+        self.headers = None
 
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
+    def remove_css_js_and_save_html(self, url):
+        try:
+            response = requests.get(url)
+            
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'html.parser')
 
-            for script in soup(["script", "style"]):
-                script.extract()
-        
-            with open(output_file, 'w', encoding='utf-8') as file:
-                file.write(soup.prettify())
-                
-            print(f"HTML content saved to {output_file}")
+                for script in soup(["script", "style"]):
+                    script.extract()
 
-        else:
-            print(f"Failed to retrieve HTML. Status code: {response.status_code}")
+                return soup.prettify()
 
-    except Exception as e:
-        print(f"An error occurred: {e}")
+            else:
+                print(f"Failed to retrieve HTML. Status code: {response.status_code}")
 
-# Example usage
-url_to_scrape = "https://rahulshettyacademy.com/loginpagePractise/"
-save_html(url_to_scrape, output_file="output.html")
+        except Exception as e:
+            print(f"An error occurred: {e}")
