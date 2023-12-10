@@ -3,11 +3,13 @@ import shelve
 from dotenv import load_dotenv
 import os
 import time
+
 load_dotenv()
+
 OPEN_AI_API_KEY = os.getenv("OPEN_AI_API_KEY")
 client = OpenAI(api_key=OPEN_AI_API_KEY)
-assistant_id = os.getenv("assistant_id")
-assistant = None
+assistants_id = os.getenv("assistant_id")
+
 # --------------------------------------------------------------
 # Get the code
 # --------------------------------------------------------------
@@ -155,43 +157,54 @@ code = """
 """
 
 # --------------------------------------------------------------
-# Create assistant
+# Create or Retrieve assistant
 # --------------------------------------------------------------
-def create_assistant():
-    global assistant  # Make the assistant variable global
-    assistant = client.beta.assistants.create(
-        name="Automation code Generator",
-        instructions="You're an Automation expert who knows to write automation script in different languages and tools.\
-            Help me to write Automation code in Java using Selenium tool.Remember to cover all the edge cases. \
-            Assume that user has created webdriver and wants only test cases that covers all the edge cases,  \
-            also look for assertions if possible like assertion on page title placeholder of the input element or label.\
-            Also look for every element in provided whether they are present or not. html code is provided below.\
-             Generate test case on this. Also generate code which is reusable following Page object model and reusability. \
-             Generate only test cases not other than that. if you are generating response with full context it will be rejected and not accepted. \
-            Provide only test cases with no import statement and no beforeClass and afterClass method. \
-            While generating test cases segregate different test cases don't give in one single response. Create '''different responses'''    \
-        ",
-        tools=[{"type": "code_interpreter"}],
-        model="gpt-4-1106-preview",
-    )
+def create_or_retrieve_assistant():
+    try:
+        assistant = client.beta.assistants.retrieve(assistants_id)
+        print(f"Using existing assistant with id: {assistants_id}")
+    except Exception as e:
+        print(f"Error retrieving existing assistant: {e}")
+        assistant = client.beta.assistants.create(
+            name="Automation code Generator",
+            instructions="Write Java Selenium test cases covering edge cases, assertions on page elements, and ensure reusability with the Page Object Model for provided HTML.``` Separate responses for different test cases by creating test case method without additional context, import statements, or before/after class methods. for the below html code assuming that web driver has already been created```",
+            tools=[{"type": "code_interpreter"}],
+            model="gpt-3.5-turbo-16k"
+        )
+        print(f"Created new assistant with id: {assistant.id}")
     return assistant
 
-assistant = create_assistant()
-
+assistant = create_or_retrieve_assistant()
+assistants_id = assistant.id  # Update the assistant ID
 
 # --------------------------------------------------------------
 # Thread management
 # --------------------------------------------------------------
+def check_if_thread_exists(wa_id):
+    with shelve.open("threads_db") as threads_shelf:
+        return threads_shelf.get(wa_id, None)
 
+def store_thread(wa_id, thread_id):
+    with shelve.open("threads_db", writeback=True) as threads_shelf:
+        threads_shelf[wa_id] = thread_id
 
 # --------------------------------------------------------------
 # Generate response
 # --------------------------------------------------------------
-def generate_response(message_body, name):
+def generate_response(message_body, wa_id, name):
+    # Check if there is already a thread_id for the wa_id
+    thread_id = check_if_thread_exists(wa_id)
+
     # If a thread doesn't exist, create one and store it
-    print(f"Creating new thread for {name} with wa_id")
-    thread = client.beta.threads.create()
-    thread_id = thread.id
+    if thread_id is None:
+        print(f"Creating new thread for {name} with wa_id {wa_id}")
+        thread = client.beta.threads.create()
+        store_thread(wa_id, thread.id)
+        thread_id = thread.id
+
+    # Otherwise, retrieve the existing thread
+    else:
+        print("Thread exists..")
 
     # Add message to thread
     message = client.beta.threads.messages.create(
@@ -202,28 +215,24 @@ def generate_response(message_body, name):
 
     # Run the assistant and get the new message
     new_message = run_assistant(thread)
+    print(f"To {name}:", new_message)
     return new_message
-
 
 # --------------------------------------------------------------
 # Run assistant
 # --------------------------------------------------------------
 def run_assistant(thread):
-    # Retrieve the Assistant
-
     # Run the assistant
     run = client.beta.threads.runs.create(
         thread_id=thread.id,
-        assistant_id=assistant.id,
+        assistant_id=assistants_id,
     )
-    
+
+    # Wait for completion
     while run.status != "completed":
+        # Be nice to the API
         time.sleep(0.5)
-        print(run.status)
-        run = client.beta.threads.runs.retrieve(
-            thread_id=thread.id,
-            run_id=run.id
-        )
+        run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
 
     # Retrieve the Messages
     messages = client.beta.threads.messages.list(thread_id=thread.id)
@@ -231,9 +240,8 @@ def run_assistant(thread):
     print(f"Generated message: {new_message}")
     return new_message
 
-
 # --------------------------------------------------------------
 # Test assistant
 # --------------------------------------------------------------
-
-new_message = generate_response(code,"Junior Vagrants")
+new_message = generate_response(code, assistants_id, "Junior Vagrants")
+print(new_message)
