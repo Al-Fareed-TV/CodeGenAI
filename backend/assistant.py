@@ -216,10 +216,8 @@ def run_assistant(thread):
         thread_id=thread.id,
         assistant_id=assistant.id,
     )
-
-    # Wait for completion
+    
     while run.status != "completed":
-        # Be nice to the API
         time.sleep(0.5)
         print(run.status)
         run = client.beta.threads.runs.retrieve(
@@ -239,4 +237,3 @@ def run_assistant(thread):
 # --------------------------------------------------------------
 
 new_message = generate_response(code,"Junior Vagrants")
-print(new_message)
