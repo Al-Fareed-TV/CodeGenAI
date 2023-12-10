@@ -9,7 +9,7 @@ class App:
 
         # Add image to the top-left corner
         with col1:
-            image = st.sidebar.image("/Users/testvagrant/Baganna/hackathon-project/front-end/images/jv.jpg", use_column_width=False, width=80)
+            image = st.sidebar.image("front-end/images/jv.jpg", use_column_width=False, width=80)
 
         caption_text = "Junior Vagrants"
         with col2:
