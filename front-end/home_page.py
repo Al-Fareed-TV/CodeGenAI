@@ -2,8 +2,8 @@ import streamlit as st
 import time
 import sys
 import ast 
-sys.path.append("/Users/testvagrant/Documents/junior-vagrants/")
-from backend.model.Assistant import Assistant
+sys.path.append("/Users/testvagrant/Baganna/junior-vagrants/backend/")
+from model.assistant import Assistant
 
 class Home_Page:
     def home_page():
@@ -61,7 +61,7 @@ class Home_Page:
                 success_message = st.success("Wait for response")
                 time.sleep(1)
                 success_message.empty()
-                
+
                 #create assistant object
                 assistant = Assistant()
                 assistant.create_assistant(selected_language, selected_tool)

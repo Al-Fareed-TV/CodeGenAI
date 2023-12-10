@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import os
 import time
 import sys
-sys.path.append("/Users/testvagrant/Documents/junior-vagrants/backend/")
+sys.path.append("/Users/testvagrant/Baganna/junior-vagrants/backend")
 from scrapper.HTMLScraper import HTMLScraper
 
 class Assistant:
