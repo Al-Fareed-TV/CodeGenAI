@@ -15,14 +15,25 @@ code = "<!DOCTYPE html>\n<html>\n<head>\n  <title>\n    LoginPage Practise | Rah
 # --------------------------------------------------------------
 # Create assistant
 # --------------------------------------------------------------
-def create_assistant():
-    assistant = client.beta.assistants.create(
-        name="Automation code Generator",
-        instructions="Write Java Selenium test cases covering edge cases, assertions on page elements, and ensure reusability with the Page Object Model for provided HTML.``` Separate responses for different test cases by creating test case method without additional context, import statements, or before/after class methods. for the below html code assuming that web driver has already been created```",
-        tools=[{"type": "code_interpreter"}],
-        model="gpt-4-1106-preview"
-    )
-    return assistant
+def create_assistant(self, language, tool):
+        self.assistant = self.client.beta.assistants.create(
+            name="Automation code Generator",
+            instructions=f"""Generate Automation code in ``` {language} language in {tool} tool ```. Cover all edge cases by assertion and checking for the presence of all elements.
+            Assume the user has already created the WebDriver.
+            Generate test cases only, focusing on assertions and element presence also performing actions following the Page Object Model.
+            Provide code only, no import statements, no beforeClass or afterClass methods.
+            Generate responses in code, not scenarios. ```Segregate different test cases into separate methods as different responses```.
+            Provide responses in JSON format as mentioned below. 
+            ```All the test cases must be segregated into '''one array of json objects, each objects containing description and testCase in format''':
+            {{
+                "description": "Description of the test case",
+                "tesCase": "Test cases that are generated"
+            }} and so on```
+            """,
+            tools=[{"type": "code_interpreter"}],
+            model="gpt-4-1106-preview",
+        )
+        return self.assistant
 
 assistant = create_assistant()
 
