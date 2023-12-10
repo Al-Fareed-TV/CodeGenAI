@@ -2,9 +2,7 @@ import streamlit as st
 from home_page import home_page
 from about_us_page import About_Page
 class App:
-    def __init__(self):
-        about_page = About_Page()
-    def main():
+    def app():
         col1, col2 = st.columns([1, 2])
 
         # Add image to the top-left corner
@@ -25,4 +23,4 @@ class App:
             About_Page().about_page()
 
 if __name__ == "__main__":
-     main()
+     App().app()

@@ -1,5 +1,10 @@
 import streamlit as st
 import time
+import sys
+import ast 
+sys.path.append("/Users/testvagrant/Documents/junior-vagrants/")
+from backend.model.Assistant import Assistant
+
 class Home_Page:
     def home_page():
         st.title("Auto TestCase Generator")
@@ -56,4 +61,21 @@ class Home_Page:
                 success_message = st.success("Wait for response")
                 time.sleep(1)
                 success_message.empty()
-            
+                
+                #create assistant object
+                assistant = Assistant()
+                assistant.create_assistant(selected_language, selected_tool)
+                response = assistant.generate_response(input_text)
+                # Check if response is a list
+                if isinstance(response, str):
+                    json_string = response.replace("```json", "").replace("```", "")
+                    json_list = ast.literal_eval(json_string)
+                    
+                    if isinstance(json_list, list):
+                        for res in json_list:
+                            st.write(res.get('description', ''))
+                            st.code(res.get('testCase', ''))
+                    else:
+                        st.warning("Unexpected response format.")
+                else:
+                    st.warning("Unexpected response format.")
