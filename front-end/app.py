@@ -5,11 +5,13 @@ class App:
     def __init__(self):
         pass
     def app(self):
+        st.title("CodeGenAI")
+        st.write(""" ### - Auto TestCase Generator """)
         col1, col2 = st.columns([1, 2])
 
         # Add image to the top-left corner
         with col1:
-            image = st.sidebar.image("front-end/images/jv.jpg", use_column_width=False, width=80)
+            image = st.sidebar.image("/Users/testvagrant/Desktop/junior-vagrants/front-end/images/jv.jpg", use_column_width=False, width=80)
 
         caption_text = "Junior Vagrants"
         with col2:

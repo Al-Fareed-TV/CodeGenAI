@@ -9,8 +9,6 @@ class Home_Page:
     def __init__(self):
         pass
     def home_page(self):
-        st.title("Auto TestCase Generator")
-
         # Input textbox with styling
         st.markdown("""
         <style>
